@@ -23,12 +23,18 @@
                     <tbody>
                         @foreach (var product in Products)
                         {
-                            <IndividualProduct 
+                            <IndividualProduct
                                 Product="product"
                                 OnProductSelected="@((prod) => SelectProduct(prod))"
                                 OnFavouriteUpdated="@(isFav => IncrementSelectedFavouriteCount(isFav, product))"
                                 OnProductEdited="HandleProductEdit"
-                                OnProductDeleted="HandleProductDelete" />
+                                OnProductDeleted="HandleProductDelete">
+                                 
+                                <FirstFragment>#1</FirstFragment>
+                                
+                                <SecondFragment>#2</SecondFragment>
+
+                            </IndividualProduct>
                         }
                     </tbody>
                 </table>

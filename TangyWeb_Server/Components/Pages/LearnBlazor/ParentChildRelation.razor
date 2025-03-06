@@ -1,0 +1,25 @@
+﻿@page "/learnblazor/parent-child-relation"
+@rendermode InteractiveServer
+
+<h3>Parent/Child Relation</h3>
+
+<_Child OnButtonClicked="ShowMessage" Title="This is a title passed as a parameter from parent component">
+    <ChildContent>
+        Render Fragment from Parent to child component
+    </ChildContent>
+</_Child>
+
+<_Child OnButtonClicked="ShowMessage" Title="This is a title passed as a parameter from parent component">
+</_Child>
+
+<p>@_messageText</p>
+
+@code {
+    private string _messageText = string.Empty;
+
+    public void ShowMessage()
+    {
+        _messageText = "Tangy button called by child component";
+    }
+
+}

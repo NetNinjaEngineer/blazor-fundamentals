@@ -67,21 +67,24 @@
                 Be Favourite
             </button>
         </td>
+        
+        <td>
+            <div>RF from parent - @FirstFragment @SecondFragment</div>
+        </td>
 
     </tr>
 }
 
 @code {
     [Parameter] public Product? Product { get; set; }
-
     [Parameter] public EventCallback<bool> OnFavouriteUpdated { get; set; }
-
     [Parameter] public EventCallback<Product> OnProductSelected { get; set; }
     [Parameter] public EventCallback<Product> OnProductEdited { get; set; }
     [Parameter] public EventCallback<Product> OnProductDeleted { get; set; }
-
     private string _selectedProperty = string.Empty;
     private string _lastEventMessage = string.Empty;
+    [Parameter] public RenderFragment FirstFragment { get; set; }
+    [Parameter] public RenderFragment SecondFragment { get; set; }
 
     private string SelectedProperty
     {
