@@ -94,6 +94,35 @@
             </div>
         </div>
     </div>
+    
+    <div class="products-list mt-4">
+        <h3>Product Table</h3>
+        @if (Products.Count > 0)
+        {
+            <table class="table table-striped-columns">
+                <tbody>
+                @foreach (var product in Products)
+                {
+                    <tr>
+                        <td> <input type="text" @bind-value="@product.Name" @bind-value:event="oninput" /> </td>
+                        <td> <input type="number" @bind-value="@product.Price" @bind-value:event="oninput" /> </td>
+                        <td> <input type="checkbox" @bind-value="@product.IsActive" checked="@(product.IsActive?"checked":null)" /> </td>
+                    </tr>
+                }                
+                </tbody>
+            </table>
+
+            <div class="product-summary mt-3 p-2">
+                <h3>Product Summary</h3>
+                @foreach (var product in Products)
+                {
+                    <p>@product.Name [@product.Price] is @(product.IsActive?"Active":"Not Active")</p>
+                }
+            </div>
+
+        }
+
+    </div>
 </div>
 
 @code {
@@ -112,4 +141,70 @@
             new() { Id = 3, Key = "Size", Value = "20oz"},
         }
     };
+
+
+    public List<Product> Products = [];
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        Products = 
+        [
+            new Product
+            {
+                Id = 1,
+                Name = "Rose Candle",
+                IsActive = true,
+                Price = 1500,
+                ProductProperties = new List<ProductProp>
+                {
+                    new() { Id = 1, Key = "Color", Value = "Black" },
+                    new() { Id = 2, Key = "Flavor", Value = "Rose Jasmine" },
+                    new() { Id = 3, Key = "Size", Value = "20oz" }
+                }
+            },
+            new Product
+            {
+                Id = 2,
+                Name = "Ocean Breeze Soap",
+                IsActive = true,
+                Price = 899,
+                ProductProperties = new List<ProductProp>
+                {
+                    new() { Id = 4, Key = "Color", Value = "Blue" },
+                    new() { Id = 5, Key = "Scent", Value = "Ocean" },
+                    new() { Id = 6, Key = "Weight", Value = "4oz" }
+                }
+            },
+            new Product
+            {
+                Id = 3,
+                Name = "Lavender Pillow",
+                IsActive = false,
+                Price = 2499,
+                ProductProperties = new List<ProductProp>
+                {
+                    new() { Id = 7, Key = "Color", Value = "Purple" },
+                    new() { Id = 8, Key = "Material", Value = "Cotton" },
+                    new() { Id = 9, Key = "Size", Value = "16x16" }
+                }
+            },
+            new Product
+            {
+                Id = 4,
+                Name = "Vanilla Diffuser",
+                IsActive = true,
+                Price = 1999,
+                ProductProperties = new List<ProductProp>
+                {
+                    new() { Id = 10, Key = "Color", Value = "White" },
+                    new() { Id = 11, Key = "Scent", Value = "Vanilla" },
+                    new() { Id = 12, Key = "Volume", Value = "100ml" }
+                }
+            }
+        ];
+
+    }
+
 }
