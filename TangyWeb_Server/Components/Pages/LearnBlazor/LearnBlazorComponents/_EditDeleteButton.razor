@@ -1,0 +1,30 @@
+﻿
+@if (IsActive)
+{
+    <input type="button" class="btn btn-danger" value="Delete" style="width:100px" @onclick="HandleDelete" />
+    <input type="button" class="btn btn-success" value="Edit" style="width:100px" @onclick="HandleEdit" />
+}
+
+
+@code {
+    [Parameter] public bool IsActive { get; set; }
+    [Parameter] public EventCallback OnDeleted { get; set; }
+    [Parameter] public EventCallback OnEdit { get; set; }
+
+    public async Task HandleDelete()
+    {
+        if (OnDeleted.HasDelegate)
+        {
+            await OnDeleted.InvokeAsync();
+        }
+    }
+
+    public async Task HandleEdit()
+    {
+        if (OnEdit.HasDelegate)
+        {
+            await OnEdit.InvokeAsync();
+        }
+    }
+
+}

@@ -1,0 +1,166 @@
+﻿@rendermode InteractiveServer
+@using Tangy_Models.LearnBlazorModels
+
+@if (Product is not null)
+{
+    <tr @onclick="@(e => HandleRowClick(Product, e))">
+        <td>@Product.Name</td>
+        <td>$@Product.Price.ToString("N2")</td>
+        <td>
+            <span class="badge @(Product.IsActive ? "bg-success" : "bg-danger")">
+                @Product.IsActive
+            </span>
+        </td>
+        <td>@(Product.IsActive ? "Active" : "Not Active")</td>
+        <td>
+            <input type="checkbox" @bind-value="@Product.IsActive" checked="@(Product.IsActive ? "checked" : null)" />
+            @if (Product.IsActive)
+            {
+                foreach (var prop in Product.ProductProperties)
+                {
+                    <p>@prop.Key - @prop.Value</p>
+                }
+            }
+        </td>
+
+        <td>Add to favorite: <input type="checkbox" @onchange="FavouriteUpdated" /> </td>
+
+        <td>
+            <select class="form-select form-select-sm"
+            @bind="SelectedProperty">
+                <option value="">Select</option>
+                @foreach (var prop in Product.ProductProperties)
+                {
+                    <option value="@prop.Key">@prop.Key</option>
+                }
+            </select>
+
+            @if (!string.IsNullOrEmpty(_lastEventMessage))
+            {
+                <div class="alert alert-info mt-3">
+                    @_lastEventMessage
+                </div>
+            }
+        </td>
+
+        <td>
+            @if (!string.IsNullOrEmpty(_selectedProperty))
+            {
+                @Product.ProductProperties.FirstOrDefault(p => p.Key == _selectedProperty)?.Value
+            }
+        </td>
+
+        <td>
+            <_EditDeleteButton IsActive="@Product.IsActive" 
+                               OnEdit="@(() => HandleEdit(Product))"
+                               OnDeleted="@(() => HandleDelete(Product))" />
+        </td>
+        <td>@GetPropertyValue(Product)</td>
+        <td>
+            <button class="btn btn-sm btn-primary" 
+                    @onclick="@(e => ToggleActive(Product, e))">
+                Toggle
+            </button>
+        </td>
+        <td>
+            <button class="btn btn-sm btn-warning" @onclick="@(e => HandleAddToFavourite(e, Product))">
+                Be Favourite
+            </button>
+        </td>
+
+    </tr>
+}
+
+@code {
+    [Parameter] public Product? Product { get; set; }
+
+    [Parameter] public EventCallback<bool> OnFavouriteUpdated { get; set; }
+
+    [Parameter] public EventCallback<Product> OnProductSelected { get; set; }
+    [Parameter] public EventCallback<Product> OnProductEdited { get; set; }
+    [Parameter] public EventCallback<Product> OnProductDeleted { get; set; }
+
+    private string _selectedProperty = string.Empty;
+    private string _lastEventMessage = string.Empty;
+
+    private string SelectedProperty
+    {
+        get => _selectedProperty;
+        set
+        {
+            if (_selectedProperty != value)
+            {
+                _selectedProperty = value;
+                HandlePropertyChange(Product, value);
+            }
+        }
+    }
+
+    private async Task FavouriteUpdated(ChangeEventArgs e)
+    {
+        await OnFavouriteUpdated.InvokeAsync((bool)(e.Value ?? false));
+        StateHasChanged();
+    }
+
+    private void HandlePropertyChange(Product product, string newValue)
+    {
+        _lastEventMessage = $"Property changed for {product.Name} to {newValue} at {DateTime.Now}";
+        StateHasChanged();
+    }
+
+    private string GetPropertyValue(Product product)
+    {
+        return string.IsNullOrEmpty(SelectedProperty)
+            ? ""
+            : product.ProductProperties.FirstOrDefault(p => p.Key == SelectedProperty)?.Value ?? "";
+    }
+
+    private void ToggleActive(Product product, MouseEventArgs e)
+    {
+        product.IsActive = !product.IsActive;
+        _lastEventMessage = $"Toggle clicked for {product.Name}. New status: {product.IsActive} at {DateTime.Now}";
+        StateHasChanged();
+    }
+
+    private async Task HandleRowClick(Product product, MouseEventArgs e)
+    {
+        _lastEventMessage = $"Row clicked: {product.Name} (ID: {product.Id}) at {DateTime.Now}";
+        await NotifyParentSelection();
+        StateHasChanged();
+    }
+
+    private async Task NotifyParentSelection()
+    {
+        if (OnProductSelected.HasDelegate)
+        {
+            await OnProductSelected.InvokeAsync(Product);
+        }
+        StateHasChanged();
+    }
+
+    private async Task HandleAddToFavourite(MouseEventArgs e, Product product)
+    {
+        _lastEventMessage = $"Added to favorites: {product.Name} at {DateTime.Now}";
+        await OnFavouriteUpdated.InvokeAsync(true);
+    }
+
+    private async Task HandleEdit(Product product)
+    {
+        _lastEventMessage = $"Edit clicked for {product.Name} at {DateTime.Now}";
+        if (OnProductEdited.HasDelegate)
+        {
+            await OnProductEdited.InvokeAsync(product);
+        }
+        await NotifyParentSelection();
+    }
+
+    private async Task HandleDelete(Product product)
+    {
+        _lastEventMessage = $"Delete clicked for {product.Name} at {DateTime.Now}";
+        if (OnProductDeleted.HasDelegate)
+        {
+            await OnProductDeleted.InvokeAsync(product);
+        }
+    }
+
+}

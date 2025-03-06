@@ -4,6 +4,7 @@
 
 <PageTitle>Demo Product</PageTitle>
 <h3>Demo Product</h3>
+<p>Favourite Count: @SelectedFavouriteCount</p>
 
 <div class="container-fluid">
     <div class="card">
@@ -11,49 +12,97 @@
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Price</th>
-                        <th>Active</th>
+                        <tr>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Active</th>
                             <th>Status</th>
                             <th>Show Properties</th>
-                    </tr>
+                        </tr>
                     </thead>
                     <tbody>
-                    @foreach (var product in Products)
-                    {
-                        <tr>
-                            <td>@product.Name</td>
-                            <td>$@product.Price.ToString("N2")</td>
-                            <td>
-                                <span class="badge @(product.IsActive ? "bg-success" : "bg-danger")">
-                                    @product.IsActive
-                                </span>
-                            </td>
-                            <td>@(product.IsActive ? "Active" : "Not Active")</td>
-                            <td>
-                                <input type="checkbox" @bind-value="@product.IsActive" checked="@(product.IsActive ? "checked" : null)" />
-                                @if (product.IsActive)
-                                {
-                                    foreach (var prop in product.ProductProperties)
-                                    {
-                                        <p>@prop.Key - @prop.Value</p>
-                                    }
-                                }
-                            </td>
-                        </tr>
-                    }
+                        @foreach (var product in Products)
+                        {
+                            <IndividualProduct 
+                                Product="product"
+                                OnProductSelected="@((prod) => SelectProduct(prod))"
+                                OnFavouriteUpdated="@(isFav => IncrementSelectedFavouriteCount(isFav, product))"
+                                OnProductEdited="HandleProductEdit"
+                                OnProductDeleted="HandleProductDelete" />
+                        }
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+
+    @if (SelectedProduct is not null)
+    {
+        <div class="alert alert-success mt-3">
+            <h4>Selected Product:</h4>
+            <p>Name: @SelectedProduct.Name</p>
+            <p>Price: $@SelectedProduct.Price.ToString("N2")</p>
+            <p>Active: @SelectedProduct.IsActive</p>
+        </div>
+    }
+    
+    @if (SelectedProducts.Count > 0)
+    {
+        <p>Favourate count: @SelectedProducts.Count</p>
+        @foreach (var selected in SelectedProducts)
+        {
+            <span>@selected</span>
+        }
+    }
+
 </div>
 
 
 
 @code {
     public List<Product> Products = [];
+    public int SelectedFavouriteCount;
+    public Product? SelectedProduct { get; set; }
+    public List<int> SelectedProducts { get; set; } = [];
+
+    public void IncrementSelectedFavouriteCount(bool isSelected, Product product)
+    {
+        if (isSelected)
+        {
+            SelectedFavouriteCount++;
+            if (!SelectedProducts.Contains(product.Id))
+            {
+                SelectedProducts.Add(product.Id);
+            }
+        }
+        else
+        {
+            SelectedFavouriteCount--;
+            SelectedProducts.Remove(product.Id);
+        }
+    }
+
+    public void SelectProduct(Product product)
+    {
+        SelectedProduct = product;
+    }
+
+    private void HandleProductEdit(Product product)
+    {
+        SelectedProduct = product;
+        StateHasChanged();
+    }
+
+    private void HandleProductDelete(Product product)
+    {
+        Products.Remove(product);
+        if (SelectedProduct?.Id == product.Id)
+        {
+            SelectedProduct = null;
+        }
+        StateHasChanged();
+    }
+
 
     protected override void OnInitialized()
     {
