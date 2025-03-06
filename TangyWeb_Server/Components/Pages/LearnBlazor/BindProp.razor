@@ -1,0 +1,44 @@
+﻿@page "/learnblazor/bindprop"
+@rendermode InteractiveServer
+@using Tangy_Models.LearnBlazorModels
+
+
+<PageTitle>Binding Properties</PageTitle>
+
+@* One Way Data Binding *@
+<h1>Product</h1>
+Name: @Product.Name <br/>
+IsActive: @Product.IsActive <br/>
+Price: @Product.Price <br/><br/>
+
+@* Two Way Data Binding ===> It refers to a mechanism where the model (data) and the view (UI) are kept in sync automatically. *@
+@* Changes in the UI are reflected in the underlying data, and changes in the data are reflected in the UI *@
+
+@* How Two-Way Data Binding Works in Blazor *@
+@* Blazor uses the @bind directive to establish two-way data binding between a UI element (like an input)  *@
+@* and a C# property. When the user modifies the UI, the property updates, and when the property changes *@
+@* programmatically, the UI reflects the new value. *@
+
+@* The @bind directive is syntactic sugar that handles: *@
+
+@* Displaying the property’s value in the UI. *@
+@* Updating the property when the UI changes (e.g., via an onchange or oninput event). *@
+
+@* The Default binding event is onchange event *@
+Price Using OnChange Event:
+<input type="number" @bind-value="Product.Price"/><br/><br/>
+
+Price Using OnInput Event: <input type="number" @bind-value="Product.Price" @bind-value:event="oninput"/>
+
+
+@code {
+
+    public Product Product = new()
+    {
+        Id = 1,
+        Name = "Rose candle",
+        IsActive = true,
+        Price = 1500
+    };
+
+}
