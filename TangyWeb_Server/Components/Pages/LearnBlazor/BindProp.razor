@@ -2,43 +2,114 @@
 @rendermode InteractiveServer
 @using Tangy_Models.LearnBlazorModels
 
-
 <PageTitle>Binding Properties</PageTitle>
 
-@* One Way Data Binding *@
-<h1>Product</h1>
-Name: @Product.Name <br/>
-IsActive: @Product.IsActive <br/>
-Price: @Product.Price <br/><br/>
+<div class="container mt-4">
+    @* One Way Data Binding *@
+    <div class="card mb-4">
+        <div class="card-header">
+            <h1 class="h3 mb-0">Product</h1>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Name:</dt>
+                <dd class="col-sm-9">@Product.Name</dd>
 
-@* Two Way Data Binding ===> It refers to a mechanism where the model (data) and the view (UI) are kept in sync automatically. *@
-@* Changes in the UI are reflected in the underlying data, and changes in the data are reflected in the UI *@
+                <dt class="col-sm-3">IsActive:</dt>
+                <dd class="col-sm-9">
+                    <span class="badge @(Product.IsActive ? "bg-success" : "bg-danger")">
+                        @Product.IsActive
+                    </span>
+                </dd>
 
-@* How Two-Way Data Binding Works in Blazor *@
-@* Blazor uses the @bind directive to establish two-way data binding between a UI element (like an input)  *@
-@* and a C# property. When the user modifies the UI, the property updates, and when the property changes *@
-@* programmatically, the UI reflects the new value. *@
+                <dt class="col-sm-3">Price:</dt>
+                <dd class="col-sm-9">$@Product.Price.ToString("N2")</dd>
 
-@* The @bind directive is syntactic sugar that handles: *@
+                <dt class="col-sm-3">Status:</dt>
+                <dd class="col-sm-9">
+                    This product is: @(Product.IsActive ? "Active" : "Not Active")
+                </dd>
 
-@* Displaying the property’s value in the UI. *@
-@* Updating the property when the UI changes (e.g., via an onchange or oninput event). *@
+                <dt class="col-sm-3">Property selected:</dt>
+                <dd class="col-sm-9">@_selectedProperty</dd>
+            </dl>
 
-@* The Default binding event is onchange event *@
-Price Using OnChange Event:
-<input type="number" @bind-value="Product.Price"/><br/><br/>
+            @if (!string.IsNullOrEmpty(_selectedProperty))
+            {
+                <div class="alert alert-info">
+                    Property value: @(Product.ProductProperties.FirstOrDefault(p => p.Key == _selectedProperty)?.Value)
+                </div>
+            }
+        </div>
+    </div>
 
-Price Using OnInput Event: <input type="number" @bind-value="Product.Price" @bind-value:event="oninput"/>
+    @* Two Way Data Binding ===> It refers to a mechanism where the model (data) and the view (UI) are kept in sync automatically. *@
+    @* Changes in the UI are reflected in the underlying data, and changes in the data are reflected in the UI *@
 
+    @* How Two-Way Data Binding Works in Blazor *@
+    @* Blazor uses the @bind directive to establish two-way data binding between a UI element (like an input)  *@
+    @* and a C# property. When the user modifies the UI, the property updates, and when the property changes *@
+    @* programmatically, the UI reflects the new value. *@
+
+    @* The @bind directive is syntactic sugar that handles: *@
+    @* Displaying the property’s value in the UI. *@
+    @* Updating the property when the UI changes (e.g., via an onchange or oninput event). *@
+
+    @* The Default binding event is onchange event *@
+    <div class="card">
+        <div class="card-header">
+            <h2 class="h4 mb-0">Two-Way Binding Examples</h2>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label">Price Using OnChange Event:</label>
+                <input type="number" class="form-control w-25" @bind-value="Product.Price" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Price Using OnInput Event:</label>
+                <input type="number" class="form-control w-25" @bind-value="Product.Price" @bind-value:event="oninput" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Price Using OnInput Event (Alternative):</label>
+                <input type="number" class="form-control w-25" @bind="Product.Price" @bind:event="oninput" />
+            </div>
+
+            <div class="mb-3 form-check">
+                <input id="is-active" type="checkbox" class="form-check-input"
+                       @bind-value="Product.IsActive" checked="@(Product.IsActive ? "checked" : null)" />
+                <label for="is-active" class="form-check-label">Is Active</label>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Product Properties:</label>
+                <select class="form-select w-25" @bind="_selectedProperty">
+                    <option value="">Select a property</option>
+                    @foreach (var prop in Product.ProductProperties)
+                    {
+                        <option value="@prop.Key">@prop.Key</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
+    private string _selectedProperty = string.Empty;
 
     public Product Product = new()
     {
         Id = 1,
         Name = "Rose candle",
         IsActive = true,
-        Price = 1500
+        Price = 1500,
+        ProductProperties = new List<ProductProp>()
+        {
+            new() { Id = 1, Key = "Color", Value = "Black"},
+            new() { Id = 2, Key = "Flavor", Value = "Rose Jasmine"},
+            new() { Id = 3, Key = "Size", Value = "20oz"},
+        }
     };
-
 }
