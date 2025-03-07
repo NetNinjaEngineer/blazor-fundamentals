@@ -12,10 +12,25 @@
 <_Child OnButtonClicked="ShowMessage" Title="This is a title passed as a parameter from parent component">
 </_Child>
 
+@* <_AnotherChildComponent *@
+@*     InputAttributes="InputAttributesFromParent"> *@
+
+@* </_AnotherChildComponent> *@
+
+<_AnotherChildComponent placeholder="Name From Parent"></_AnotherChildComponent>
+
 <p>@_messageText</p>
 
 @code {
     private string _messageText = string.Empty;
+
+    // public Dictionary<string, object> InputAttributesFromParent { get; set; } = new()
+    // {
+    //     { "required", "required" },
+    //     { "placeholder", "Enter your Name From Parent" },
+    //     { "maxLength", 10 }
+    // };
+
 
     public void ShowMessage()
     {
