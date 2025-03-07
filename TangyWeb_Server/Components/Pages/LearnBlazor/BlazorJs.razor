@@ -1,0 +1,38 @@
+﻿@page "/learnBlazor/blazorJs"
+@rendermode InteractiveServer
+@inject IJSRuntime JsRuntime
+
+<h3>BlazorJs</h3>
+
+<div class="row">
+    <button class="btn btn-secondary" @onclick="TestConfirmBox">Test Confirm Box</button>
+</div>
+
+<div class="row">
+    @if (ConfirmResult)
+    {
+        <p>Confirmation has made.</p>
+    }
+    else
+    {
+        <p>Confirmation pending.</p>
+    }
+
+</div>
+
+
+@* If you want to use Blazor's native IJSRuntime to implement toast notifications instead of a third-party library  *@
+@* like Blazored/Toast, you'll need to write custom JavaScript to handle the toast display and invoke it from Blazor. *@
+@* This approach gives you full control but requires more setup. Below is an efficient example using IJSRuntime to *@
+@* create a simple toast system. *@
+
+
+@code {
+    private const string ConfirmMessage = "Are you sure you want to click?";
+    private bool ConfirmResult { get; set; }
+
+    private async Task TestConfirmBox()
+    {
+       ConfirmResult =  await JsRuntime.InvokeAsync<bool>("confirm", ConfirmMessage);
+    }
+}

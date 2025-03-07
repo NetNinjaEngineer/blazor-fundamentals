@@ -1,0 +1,69 @@
+﻿@page "/learnBlazor/native-toast-example"
+@using TangyWeb_Server.Helpers
+@rendermode InteractiveServer
+@inject ToastService ToastService
+@inject IJSRuntime JsRuntime
+
+<h3>NativeToastExample</h3>
+
+<button class="btn btn-success" @onclick="ShowSuccessToast">Show Success</button>
+<button class="btn btn-info" @onclick="ShowInfoToast">Show Info</button>
+<button class="btn btn-warning" @onclick="ShowWarningToast">Show Warning</button>
+<button class="btn btn-danger" @onclick="ShowErrorToast">Show Error</button>
+<button class="btn btn-danger" @onclick="TestJsFunction">Test JS Functions</button>
+
+@code {
+
+    private async Task ShowSuccessToast()
+    {
+        await ToastService.ShowSuccessToast("Operation completed successfully");
+    }
+
+    private async Task ShowInfoToast()
+    {
+        await ToastService.ShowInfoToast("This is an informational message.");
+
+    }
+
+    private async Task ShowErrorToast()
+    {
+        await ToastService.ShowErrorToast("An error occurred during the operation");
+
+    }
+
+    private async Task ShowWarningToast()
+    {
+        await ToastService.ShowWarningToast("Warning: This action cannot be undone.");
+    }
+
+    private async Task TestJsFunction()
+    {
+        try
+        {
+            await JsRuntime.InvokeVoidAsync("console.log", "Testing JavaScript function");
+            await JsRuntime.InvokeVoidAsync("showToast", "Direct JS test", "info");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in JS function test: {ex.Message}");
+        }
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JsRuntime.InvokeVoidAsync("console.log", "Component rendered. Testing JS availability...");
+            try
+            {
+                await JsRuntime.InvokeVoidAsync("eval", "console.log('showToast function exists: ' + (typeof window.showToast === 'function'))");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error testing JS: {ex.Message}");
+            }
+        }
+    }
+
+}

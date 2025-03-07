@@ -1,4 +1,6 @@
-﻿namespace TangyWeb_Server
+﻿using TangyWeb_Server.Helpers;
+
+namespace TangyWeb_Server
 {
     public class Program
     {
@@ -8,6 +10,8 @@
 
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
+
+            builder.Services.AddScoped<ToastService>();
 
             var app = builder.Build();
 
