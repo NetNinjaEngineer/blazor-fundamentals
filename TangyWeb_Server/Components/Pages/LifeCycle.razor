@@ -1,0 +1,75 @@
+﻿@page "/learnBlazor/lifecycle"
+@rendermode InteractiveServer
+
+<h3>LifeCycle</h3>
+
+<p role="status">Current count: @_currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+<div class="border">
+    <LifeCycleChild CountValue="@_currentCount"></LifeCycleChild>
+</div>
+
+<br />
+<hr />
+
+@foreach (var item in EventTypes)
+{
+    @item
+    <hr />
+}
+
+@code {
+    private int _currentCount;
+    List<string> EventTypes = [];
+
+    private void IncrementCount()
+    {
+        _currentCount++;
+    }
+
+    /// <summary>
+    /// Called when the component is initialized.
+    /// This method is executed once when the component is first created,
+    /// before the component is rendered for the first time.
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        EventTypes.Add("OnInitialized is called.");
+    }
+
+    /// <summary>
+    /// Called asynchronously when the component is initialized.
+    /// This method is useful for performing asynchronous operations such as fetching data from an API.
+    /// Unlike OnInitialized, this method supports async/await and executes before the first render.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        EventTypes.Add("OnInitializedAsync is called.");
+        await Task.Delay(1000);
+    }
+
+    protected override void OnParametersSet()
+    {
+        EventTypes.Add("OnParametersSet is called.");
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        EventTypes.Add("OnParametersSetAsync is called.");
+
+        await Task.Delay(1000);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        EventTypes.Add("OnAfterRender is called.");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        EventTypes.Add("OnAfterRenderAsync is called.");
+    }
+
+}

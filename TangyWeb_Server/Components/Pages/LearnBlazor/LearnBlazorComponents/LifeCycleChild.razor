@@ -1,0 +1,45 @@
+﻿@using Microsoft.AspNetCore.Authentication.Cookies
+@rendermode InteractiveServer
+
+<h3>LifeCycle - Child</h3>
+
+<br />
+<hr />
+
+@foreach (var item in EventTypes)
+{
+    <div class="text-success fs-1">@item</div>
+    <hr />
+}
+
+@code {
+    [Parameter] public int CountValue { get; set; }
+    List<string> EventTypes = [];
+
+    protected override void OnInitialized()
+    {
+        EventTypes.Add("Child - OnInitialized is called.");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        EventTypes.Add("Child - OnInitializedAsync is called.");
+        await Task.Delay(1000);
+    }
+
+
+    // When a component is first initialized , and each time a new or updated
+    // parameters are received from the parent in the render tree
+    protected override void OnParametersSet()
+    {
+        EventTypes.Add("Child - OnParametersSet is called");
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        EventTypes.Add("Child - OnParametersSetAsync is called");
+        await Task.Delay(1000);
+    }
+
+
+}
