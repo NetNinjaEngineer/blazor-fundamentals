@@ -1,4 +1,8 @@
-﻿using TangyWeb_Server.Helpers;
+﻿using Microsoft.EntityFrameworkCore;
+using Tangy_Business.Repository;
+using Tangy_Business.Repository.IRepository;
+using Tangy_DataAccess.Data;
+using TangyWeb_Server.Helpers;
 
 namespace TangyWeb_Server
 {
@@ -12,6 +16,11 @@ namespace TangyWeb_Server
                 .AddInteractiveServerComponents();
 
             builder.Services.AddScoped<ToastService>();
+
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
             var app = builder.Build();
 
